@@ -4,6 +4,7 @@ import { Notify } from 'notiflix/build/notiflix-notify-aio';
 import ContactForm from './ContactForm';
 import Filter from './Filter';
 import ContactList from './ContactList';
+import css from './App.module.css';
 
 class App extends Component {
 
@@ -18,13 +19,13 @@ class App extends Component {
 
 
 formSubmitHandler = ({name, number}) => {
-  if (!this.checkDuplicate(name)){
-    const newContactItem = {id: nanoid(), name, number};
-    this.setState(({contacts}) => ({
-      contacts: [newContactItem, ...contacts]}));
+  if (this.checkDuplicate(name)){
+     Notify.info(`${name} is already in contacts`);
       return;
   }
-  Notify.info(`${name} is already in contacts`);
+  const newContactItem = {id: nanoid(), name, number};
+  this.setState(({contacts}) => ({
+    contacts: [newContactItem, ...contacts]}));
 }
 
 changeFilter = event => {
@@ -55,13 +56,17 @@ getVisibleContacts = () => {
     const visibleContacts = this.getVisibleContacts();
 
     return (
-      <div>
-      <h1>Phonebook</h1>
+      <div className={css.container}>
+        <div className={css.content}>
+        <h1 className={css.title}>Phonebook</h1>
       <ContactForm onSubmit={this.formSubmitHandler}/>
-    
-      <h2>Contacts</h2>
+          </div>
+      
+          <div className={css.content}>
+      <h2 className={css.title}>Contacts</h2>
       <Filter value={filter} onChange={this.changeFilter}/>
       <ContactList contacts={visibleContacts} onDeleteContact={this.deleteContact} />
+      </div>
     </div>
     );
   }
