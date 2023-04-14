@@ -1,5 +1,6 @@
 import { Component } from "react";
 import { nanoid } from 'nanoid';
+import { Notify } from 'notiflix/build/notiflix-notify-aio';
 import ContactForm from './ContactForm';
 import Filter from './Filter';
 import ContactList from './ContactList';
@@ -11,10 +12,19 @@ class App extends Component {
     filter: '',
   }
 
-formSubmitHandler = data => {
-  const newContactItem = {id: nanoid(), ...data};
-  this.setState(({contacts}) => ({
-    contacts: [newContactItem, ...contacts]}));
+  checkDuplicate = newName => {
+    return this.state.contacts.find(({ name }) => name === newName);
+  };
+
+
+formSubmitHandler = ({name, number}) => {
+  if (!this.checkDuplicate(name)){
+    const newContactItem = {id: nanoid(), name, number};
+    this.setState(({contacts}) => ({
+      contacts: [newContactItem, ...contacts]}));
+      return;
+  }
+  Notify.info(`${name} is already in contacts`);
 }
 
 changeFilter = event => {
